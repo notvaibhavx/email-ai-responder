@@ -1,0 +1,193 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bd87a51f-7943-48b3-baff-b90cca78333f",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4pf92laF46JDfjo2",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Sponsorship",
+              "description": "YouTube sponsorship emails are professional business inquiries from brands or companies interested in promoting their products or services through your content."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "2543dee3-95da-4592-890f-8f8ee508afe4",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        200
+      ],
+      "id": "999042e1-990b-43a1-b2de-99ac877a0f66",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "1dwPiG2kgzgoaBiR",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=YOU are an assistant of A YouTuber\nADITXAI \n\n\nYour job is to respond to the email below.\nFirst, Acknowledge the Email: Begin by thanking the sender for reaching out and expressing appreciation for their interest in collaborating with AditxAI.\n\nState the Sponsorship Cost: Politely mention that the base sponsorship cost for a video is $300. Clarify that this fee includes the creation of a high-quality, engaging video along with production and promotional efforts.\n\nOffer Flexibility: Indicate openness to discussing further details to ensure both parties are aligned on deliverables, goals, and expectations. Reaffirm Interest in the Partnership: Show genuine excitement about the opportunity to collaborate. Highlight AditxAI’s ability to effectively promote relevant products to a dedicated and engaged audience. Suggest Next Steps: Propose scheduling a call or continuing the discussion via email to clarify any remaining details and move forward with the partnership.\n\ni WANT YOU to respond in two parts, email to respond ,email sudject and eamil body\n\nThe email to respond to is:  {{ $json.text }}",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        580,
+        0
+      ],
+      "id": "fbee10ab-c2ea-4b88-90ce-83b7a10d8776",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "1dwPiG2kgzgoaBiR",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.message.role }}",
+        "message": "={{ $json.message.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        940,
+        0
+      ],
+      "id": "1f69c146-7eda-421f-b2d4-377ce93f825e",
+      "name": "Gmail",
+      "webhookId": "4e58e813-4057-4d4a-bebd-0502cd43337f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4pf92laF46JDfjo2",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9ea28071-d0da-41db-9fa4-8296a426df77",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d3784f1a44885a9b2f1daf1db026b47ae02cd711e46b68716bbd81a815183189"
+  },
+  "id": "qNQozGKwC1ZVc5Ws",
+  "tags": []
+}
